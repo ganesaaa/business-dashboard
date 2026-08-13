@@ -456,6 +456,29 @@ const supabase = window.supabase.createClient(
       button.classList.add("active");
 
     }
+    async function loadMarketplaceBalances() {
+    const { data, error } = await supabase
+        .from("marketplace_balances")
+        .select("marketplace, balance, created_at")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error("Gagal mengambil saldo:", error);
+        return;
+    }
+
+    const latest = {};
+
+    data.forEach(row => {
+        if (!latest[row.marketplace]) {
+            latest[row.marketplace] = row.balance;
+        }
+    });
+
+    console.log("Saldo marketplace terbaru:", latest);
+}
+
+loadMarketplaceBalances();
 
   </script>
 
