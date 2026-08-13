@@ -445,8 +445,8 @@
               + Add Expense
             </button>
 
-            <button class="action">
-              + Add Account
+<button class="action" onclick="addAccount()">
+  + Add Account
             </button>
 
           </div>
@@ -478,6 +478,27 @@ const db = window.supabase.createClient(
       button.classList.add("active");
 
     }
+    async function addAccount() {
+    const name = prompt("Masukkan nama akun:");
+
+    if (!name || !name.trim()) {
+        return;
+    }
+
+    const { data, error } = await db
+        .from("accounts")
+        .insert([{ name: name.trim() }])
+        .select();
+
+    if (error) {
+        console.error("Gagal menambahkan akun:", error);
+        alert("Gagal menambahkan akun: " + error.message);
+        return;
+    }
+
+    alert("Akun berhasil ditambahkan!");
+    console.log("Akun baru:", data);
+}
     async function loadMarketplaceBalances() {
     const { data, error } = await db
         .from("marketplace_balances")
