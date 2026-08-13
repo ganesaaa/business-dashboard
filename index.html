@@ -492,10 +492,12 @@ const supabase = window.supabase.createClient(
     const latest = {};
 
     data.forEach(row => {
-        if (!latest[row.marketplace]) {
-            latest[row.marketplace] = row.balance;
-        }
-    });
+    const marketplace = row.marketplace.toLowerCase();
+
+    if (!latest[marketplace]) {
+        latest[marketplace] = row.balance;
+    }
+});
 
     // Tampilkan saldo ke dashboard
     document.getElementById("balance-u7buy").textContent =
