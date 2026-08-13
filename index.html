@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Business Dashboard</title>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -439,7 +439,13 @@
 
 
   <script>
+const SUPABASE_URL = "https://dttfptxrazyibnrpabnz.supabase.co";
+const SUPABASE_KEY = "sb_publishable_tlKnMmgc3ETQVRuT8AxpsQ_XX5ccDtI";
 
+const supabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
     function showPage(page, button) {
 
       document.getElementById("pageTitle").textContent = page;
