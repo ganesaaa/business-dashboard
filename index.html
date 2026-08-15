@@ -1,540 +1,305 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Business Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background: #0b0f14;
-      color: #f5f7fa;
-      min-height: 100vh;
-    }
-
-    .layout {
-      display: flex;
-      min-height: 100vh;
-    }
-
-    /* SIDEBAR */
-    .sidebar {
-      width: 240px;
-      background: #11161d;
-      border-right: 1px solid #202731;
-      padding: 24px 16px;
-      position: fixed;
-      left: 0;
-      top: 0;
-      bottom: 0;
-    }
-
-    .logo {
-      font-size: 20px;
-      font-weight: 700;
-      padding: 0 12px 30px;
-    }
-
-    .logo span {
-      color: #4ade80;
-    }
-
-    .nav-title {
-      font-size: 11px;
-      color: #6b7280;
-      text-transform: uppercase;
-      padding: 0 12px;
-      margin-bottom: 8px;
-      letter-spacing: 1px;
-    }
-
-    .nav {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    .nav button {
-      width: 100%;
-      border: 0;
-      background: transparent;
-      color: #9ca3af;
-      padding: 12px;
-      border-radius: 8px;
-      text-align: left;
-      cursor: pointer;
-      font-size: 14px;
-      transition: .2s;
-    }
-
-    .nav button:hover,
-    .nav button.active {
-      background: #1b242f;
-      color: white;
-    }
-
-    .nav button.active {
-      color: #4ade80;
-    }
-
-    /* MAIN */
-    .main {
-      margin-left: 240px;
-      width: calc(100% - 240px);
-      padding: 32px;
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-    }
-
-    .topbar h1 {
-      font-size: 28px;
-    }
-
-    .topbar p {
-      color: #7f8a99;
-      font-size: 13px;
-      margin-top: 6px;
-    }
-
-    .status {
-      background: #14251b;
-      border: 1px solid #21452c;
-      color: #4ade80;
-      padding: 9px 14px;
-      border-radius: 8px;
-      font-size: 12px;
-    }
-
-    /* CARDS */
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .card {
-      background: #11161d;
-      border: 1px solid #202731;
-      border-radius: 12px;
-      padding: 20px;
-    }
-
-    .card-label {
-      color: #7f8a99;
-      font-size: 13px;
-      margin-bottom: 12px;
-    }
-
-    .card-value {
-      font-size: 25px;
-      font-weight: 700;
-    }
-
-    .positive {
-      color: #4ade80;
-    }
-
-    .negative {
-      color: #f87171;
-    }
-
-    /* CONTENT */
-    .grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 20px;
-    }
-
-    .panel {
-      background: #11161d;
-      border: 1px solid #202731;
-      border-radius: 12px;
-      padding: 20px;
-    }
-
-    .panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .panel-header h2 {
-      font-size: 16px;
-    }
-
-    .panel-header span {
-      font-size: 12px;
-      color: #6b7280;
-    }
-
-    /* TABLE */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th {
-      text-align: left;
-      color: #6b7280;
-      font-size: 11px;
-      text-transform: uppercase;
-      padding: 10px 8px;
-      border-bottom: 1px solid #202731;
-    }
-
-    td {
-      padding: 14px 8px;
-      border-bottom: 1px solid #1b222b;
-      font-size: 13px;
-    }
-
-    .empty {
-      text-align: center;
-      color: #6b7280;
-      padding: 35px 0;
-    }
-
-    /* QUICK ACTION */
-    .actions {
-      display: grid;
-      gap: 10px;
-    }
-
-    .action {
-      background: #171d25;
-      border: 1px solid #252d38;
-      color: #d1d5db;
-      padding: 13px;
-      border-radius: 8px;
-      cursor: pointer;
-      text-align: left;
-      transition: .2s;
-    }
-
-    .action:hover {
-      border-color: #4ade80;
-      color: white;
-    }
-
-    /* RESPONSIVE */
-    @media (max-width: 1000px) {
-      .cards {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 700px) {
-      .sidebar {
-        width: 70px;
-        padding: 20px 8px;
-      }
-
-      .logo {
-        font-size: 0;
-        text-align: center;
-      }
-
-      .logo span {
-        font-size: 20px;
-      }
-
-      .nav-title {
-        display: none;
-      }
-
-      .nav button {
-        text-align: center;
-        font-size: 0;
-      }
-
-      .nav button::first-letter {
-        font-size: 18px;
-      }
-
-      .main {
-        margin-left: 70px;
-        width: calc(100% - 70px);
-        padding: 20px;
-      }
-
-      .cards {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:#0b0f14;color:#f5f7fa;min-height:100vh}
+button,input{font:inherit}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:240px;background:#11161d;border-right:1px solid #202731;padding:24px 16px;position:fixed;left:0;top:0;bottom:0}
+.logo{font-size:20px;font-weight:700;padding:0 12px 30px}.logo span{color:#4ade80}
+.nav-title{font-size:11px;color:#6b7280;text-transform:uppercase;padding:0 12px;margin-bottom:8px;letter-spacing:1px}
+.nav{display:flex;flex-direction:column;gap:5px}.nav button{width:100%;border:0;background:transparent;color:#9ca3af;padding:12px;border-radius:8px;text-align:left;cursor:pointer;font-size:14px}
+.nav button:hover,.nav button.active{background:#1b242f;color:white}.nav button.active{color:#4ade80}
+.main{margin-left:240px;width:calc(100% - 240px);padding:32px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px}.topbar h1{font-size:28px}.topbar p{color:#7f8a99;font-size:13px;margin-top:6px}
+.status{background:#14251b;border:1px solid #21452c;color:#4ade80;padding:9px 14px;border-radius:8px;font-size:12px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}.card{background:#11161d;border:1px solid #202731;border-radius:12px;padding:20px}
+.card-label{color:#7f8a99;font-size:13px;margin-bottom:12px}.card-value{font-size:25px;font-weight:700}.positive{color:#4ade80}.negative{color:#f87171}
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:20px}.panel{background:#11161d;border:1px solid #202731;border-radius:12px;padding:20px}
+.panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.panel-header h2{font-size:16px}.muted{font-size:12px;color:#6b7280}
+table{width:100%;border-collapse:collapse}th{text-align:left;color:#6b7280;font-size:11px;text-transform:uppercase;padding:10px 8px;border-bottom:1px solid #202731}
+td{padding:14px 8px;border-bottom:1px solid #1b222b;font-size:13px}.empty{text-align:center;color:#6b7280;padding:35px 0}
+.actions{display:grid;gap:10px}.action{background:#171d25;border:1px solid #252d38;color:#d1d5db;padding:13px;border-radius:8px;cursor:pointer;text-align:left}
+.action:hover{border-color:#4ade80;color:white}.danger{border:1px solid #4b2525;background:#241719;color:#fca5a5;padding:6px 9px;border-radius:6px;cursor:pointer}
+.balance-item,.account-item{display:flex;justify-content:space-between;align-items:center;padding:14px;margin-bottom:10px;background:#171d25;border:1px solid #252d38;border-radius:8px}
+.account-actions{display:flex;align-items:center;gap:10px}.badge{display:inline-block;padding:4px 8px;border-radius:6px;background:#171d25;color:#9ca3af;font-size:11px}
+.notice{padding:12px;background:#171d25;border:1px solid #252d38;border-radius:8px;color:#9ca3af;font-size:12px;margin-bottom:16px}
+@media(max-width:1000px){.cards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
+@media(max-width:700px){.sidebar{width:70px;padding:20px 8px}.logo{font-size:0;text-align:center}.logo span{font-size:20px}.nav-title{display:none}.nav button{text-align:center;font-size:0}.nav button::first-letter{font-size:18px}.main{margin-left:70px;width:calc(100% - 70px);padding:20px}.cards{grid-template-columns:1fr}}
+</style>
 </head>
-
 <body>
-
-  <div class="layout">
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-      <div class="logo">
-        Business<span>OS</span>
-      </div>
-
-      <div class="nav-title">Menu</div>
-
-      <div class="nav">
-        <button class="active" onclick="showPage('Dashboard', this)">
-          📊 Dashboard
-        </button>
-
-        <button onclick="showPage('Stock', this)">
-          📦 Stock
-        </button>
-
-        <button onclick="showPage('Sales', this)">
-          💰 Sales
-        </button>
-
-        <button onclick="showPage('Expenses', this)">
-          💸 Expenses
-        </button>
-
-        <button onclick="showPage('Accounts', this)">
-          👤 Accounts
-        </button>
-      </div>
-    </aside>
-
-
-    <!-- MAIN -->
-    <main class="main">
-
-      <div class="topbar">
-        <div>
-          <h1 id="pageTitle">Dashboard</h1>
-          <p>Overview bisnis kamu</p>
-        </div>
-
-        <div class="status">
-          ● System Online
-        </div>
-      </div>
-
-
-      <!-- STAT CARDS -->
-      <section class="cards">
-
-        <div class="card">
-          <div class="card-label">Total Sales</div>
-          <div class="card-value" id="totalSales">
-            $0.00
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-label">Total Expenses</div>
-          <div class="card-value negative" id="totalExpenses">
-            $0.00
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-label">Profit</div>
-          <div class="card-value positive" id="totalProfit">
-            $0.00
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-label">Stock Value</div>
-          <div class="card-value" id="stockValue">
-            Rp0
-          </div>
-        </div>
-
-      </section>
-
-
-      <!-- CONTENT -->
-      <section class="grid">
-
-        <div class="panel">
-
-          <div class="panel-header">
-            <h2>Recent Sales</h2>
-            <span>Latest transactions</span>
-          </div>
-
-          <table>
-
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Qty</th>
-                <th>Price</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-
-            <tbody id="salesTable">
-
-              <tr>
-                <td colspan="4" class="empty">
-                  Belum ada transaksi
-                </td>
-              </tr>
-
-            </tbody>
-
-          </table>
-
-        </div>
-
-
-        <div class="panel">
-    <div class="panel-header">
-        <h2>Marketplace Balances</h2>
-    </div>
-
-    <div id="marketplaceBalances" style="display:grid;gap:10px;">
-        <div style="padding:12px;background:#171d25;border:1px solid #252d38;border-radius:8px;">
-            <strong>U7BUY</strong>
-            <span id="balance-u7buy" style="float:right;">$0.00</span>
-        </div>
-
-        <div style="padding:12px;background:#171d25;border:1px solid #252d38;border-radius:8px;">
-            <strong>Eldorado</strong>
-            <span id="balance-eldorado" style="float:right;">$0.00</span>
-        </div>
-
-        <div style="padding:12px;background:#171d25;border:1px solid #252d38;border-radius:8px;">
-            <strong>ZeusX</strong>
-            <span id="balance-zeusx" style="float:right;">$0.00</span>
-        </div>
-    </div>
-</div>
-        <div class="panel">
-
-          <div class="panel-header">
-            <h2>Quick Actions</h2>
-          </div>
-
-          <div class="actions">
-
-            <button class="action">
-              + Add Stock
-            </button>
-
-            <button class="action">
-              + Add Sale
-            </button>
-
-            <button class="action">
-              + Add Expense
-            </button>
-
-<button class="action" onclick="addAccount()">
-  + Add Account
-            </button>
-
-          </div>
-
-        </div>
-
-      </section>
-
-    </main>
-
+<div class="layout">
+<aside class="sidebar">
+  <div class="logo">Business<span>OS</span></div>
+  <div class="nav-title">Menu</div>
+  <div class="nav">
+    <button class="active" onclick="showPage('Dashboard',this)">📊 Dashboard</button>
+    <button onclick="showPage('Stock',this)">📦 Stock</button>
+    <button onclick="showPage('Sales',this)">💰 Sales</button>
+    <button onclick="showPage('Expenses',this)">💸 Expenses</button>
+    <button onclick="showPage('Accounts',this)">👤 Accounts</button>
   </div>
+</aside>
 
+<main class="main">
+<div class="topbar">
+  <div><h1 id="pageTitle">Dashboard</h1><p>Overview bisnis kamu</p></div>
+  <div class="status">● System Online</div>
+</div>
 
-  <script>
+<section id="dashboardPage">
+  <section class="cards">
+    <div class="card"><div class="card-label">Total Sales</div><div class="card-value" id="totalSales">$0.00</div></div>
+    <div class="card"><div class="card-label">Total Expenses</div><div class="card-value negative" id="totalExpenses">$0.00</div></div>
+    <div class="card"><div class="card-label">Profit</div><div class="card-value positive" id="totalProfit">$0.00</div></div>
+    <div class="card"><div class="card-label">Stock Value</div><div class="card-value" id="stockValue">Rp0</div></div>
+  </section>
+
+  <section class="grid">
+    <div class="panel">
+      <div class="panel-header"><h2>Recent Sales</h2><span class="muted">Latest transactions</span></div>
+      <table><thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Date</th></tr></thead>
+      <tbody id="recentSales"><tr><td colspan="4" class="empty">Loading...</td></tr></tbody></table>
+    </div>
+
+    <div>
+      <div class="panel">
+        <div class="panel-header"><h2>Marketplace Balances</h2><button class="action" onclick="addBalance()" style="width:auto">+ Add</button></div>
+        <div id="marketplaceBalances"></div>
+      </div>
+      <div class="panel" style="margin-top:20px">
+        <div class="panel-header"><h2>Quick Actions</h2></div>
+        <div class="actions">
+          <button class="action" onclick="addStock()">+ Add Stock</button>
+          <button class="action" onclick="addSale()">+ Add Sale</button>
+          <button class="action" onclick="addExpense()">+ Add Expense</button>
+          <button class="action" onclick="showPage('Accounts',document.querySelectorAll('.nav button')[4])">+ Accounts</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<section id="stockPage" class="panel" style="display:none">
+  <div class="panel-header"><h2>Stock</h2><button class="action" onclick="addStock()" style="width:auto">+ Add Stock</button></div>
+  <div class="notice">Catat stok aktif, jumlah barang, dan modal per unit dalam Rupiah.</div>
+  <table><thead><tr><th>Item</th><th>Qty</th><th>Modal/unit</th><th>Total</th><th></th></tr></thead><tbody id="stockList"></tbody></table>
+</section>
+
+<section id="salesPage" class="panel" style="display:none">
+  <div class="panel-header"><h2>Sales</h2><button class="action" onclick="addSale()" style="width:auto">+ Add Sale</button></div>
+  <div class="notice">Harga jual dicatat dalam USD per unit.</div>
+  <table><thead><tr><th>Item</th><th>Qty</th><th>Harga/unit</th><th>Total</th><th>Date</th><th></th></tr></thead><tbody id="salesList"></tbody></table>
+</section>
+
+<section id="expensesPage" class="panel" style="display:none">
+  <div class="panel-header"><h2>Expenses</h2><button class="action" onclick="addExpense()" style="width:auto">+ Add Expense</button></div>
+  <div class="notice">Catat pengeluaran bisnis dalam USD.</div>
+  <table><thead><tr><th>Deskripsi</th><th>Amount</th><th>Date</th><th></th></tr></thead><tbody id="expensesList"></tbody></table>
+</section>
+
+<section id="accountsPage" class="panel" style="display:none">
+  <div class="panel-header"><h2>Accounts</h2><button class="action" onclick="addAccount()" style="width:auto">+ Add Account</button></div>
+  <div id="accountsList"><p class="empty">Loading accounts...</p></div>
+</section>
+</main>
+</div>
+
+<script>
 const SUPABASE_URL = "https://dttfptxrazyibnrpabnz.supabase.co";
 const SUPABASE_KEY = "sb_publishable_tlKnMmgc3ETQVRuT8AxpsQ_XX5ccDtI";
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const db = window.supabase.createClient(
-  SUPABASE_URL,
-    SUPABASE_KEY
-);
-    function showPage(page, button) {
+const $ = id => document.getElementById(id);
+const money = n => "$" + Number(n || 0).toFixed(2);
+const rupiah = n => "Rp" + Number(n || 0).toLocaleString("id-ID");
+const esc = s => String(s ?? "").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+const fmtDate = d => d ? new Date(d).toLocaleString("id-ID",{dateStyle:"short",timeStyle:"short"}) : "";
 
-      document.getElementById("pageTitle").textContent = page;
-
-      document.querySelectorAll(".nav button")
-        .forEach(btn => btn.classList.remove("active"));
-
-      button.classList.add("active");
-
-    }
-    async function addAccount() {
-    const name = prompt("Masukkan nama akun:");
-
-    if (!name || !name.trim()) {
-        return;
-    }
-
-    const { data, error } = await db
-        .from("accounts")
-        .insert([{ name: name.trim() }])
-        .select();
-
-    if (error) {
-        console.error("Gagal menambahkan akun:", error);
-        alert("Gagal menambahkan akun: " + error.message);
-        return;
-    }
-
-    alert("Akun berhasil ditambahkan!");
-    console.log("Akun baru:", data);
-}
-    async function loadMarketplaceBalances() {
-    const { data, error } = await db
-        .from("marketplace_balances")
-        .select("marketplace, balance, created_at")
-        .order("created_at", { ascending: false });
-
-    if (error) {
-        console.error("Gagal mengambil saldo:", error);
-        return;
-    }
-
-    const latest = {};
-
-    data.forEach(row => {
-    const marketplace = row.marketplace.toLowerCase();
-
-    if (!latest[marketplace]) {
-        latest[marketplace] = row.balance;
-    }
-});
-
-    // Tampilkan saldo ke dashboard
-    document.getElementById("balance-u7buy").textContent =
-        "$" + Number(latest.u7buy || 0).toFixed(2);
-
-    document.getElementById("balance-eldorado").textContent =
-        "$" + Number(latest.eldorado || 0).toFixed(2);
-
-    document.getElementById("balance-zeusx").textContent =
-        "$" + Number(latest.zeusx || 0).toFixed(2);
-
-    console.log("Saldo marketplace terbaru:", latest);
+function showPage(page, button){
+  $("pageTitle").textContent = page;
+  document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+  if(button) button.classList.add("active");
+  ["dashboardPage","stockPage","salesPage","expensesPage","accountsPage"].forEach(id=>$(id).style.display="none");
+  const map={Dashboard:"dashboardPage",Stock:"stockPage",Sales:"salesPage",Expenses:"expensesPage",Accounts:"accountsPage"};
+  $(map[page]).style.display="block";
+  if(page==="Dashboard") loadDashboard();
+  if(page==="Stock") loadStock();
+  if(page==="Sales") loadSales();
+  if(page==="Expenses") loadExpenses();
+  if(page==="Accounts") loadAccounts();
 }
 
-loadMarketplaceBalances();
-  </script>
+async function addAccount(){
+  const name=prompt("Masukkan nama akun:");
+  if(!name?.trim()) return;
+  const {error}=await db.from("accounts").insert([{name:name.trim()}]);
+  if(error){console.error(error);alert("Gagal menambahkan akun: "+error.message);return;}
+  await loadAccounts();
+  alert("Akun berhasil ditambahkan!");
+}
 
+async function loadAccounts(){
+  const {data,error}=await db.from("accounts").select("id,name,created_at").order("created_at",{ascending:false});
+  const list=$("accountsList");
+  if(error){list.innerHTML='<p class="empty">Gagal memuat akun: '+esc(error.message)+'</p>';return;}
+  if(!data?.length){list.innerHTML='<p class="empty">Belum ada akun.</p>';return;}
+  list.innerHTML=data.map(a=>`
+    <div class="account-item">
+      <div><strong>${esc(a.name)}</strong><div class="muted">${fmtDate(a.created_at)}</div></div>
+      <div class="account-actions">
+        <span class="badge">#${esc(a.id)}</span>
+        <button class="danger" onclick="deleteRow('accounts',${Number(a.id)},loadAccounts)">Hapus</button>
+      </div>
+    </div>`).join("");
+}
+
+async function addStock(){
+  const item=prompt("Nama item:");
+  if(!item?.trim()) return;
+  const qty=Number(prompt("Jumlah stok:","1"));
+  const cost=Number(prompt("Modal per unit (Rp):","0"));
+  if(!Number.isFinite(qty)||!Number.isFinite(cost)||qty<0||cost<0){alert("Angka tidak valid.");return;}
+  const {error}=await db.from("stock").insert([{item:item.trim(),qty,cost}]);
+  if(error){alert("Gagal menambah stock: "+error.message);return;}
+  await loadStock(); await loadDashboard();
+}
+
+async function loadStock(){
+  const {data,error}=await db.from("stock").select("*").order("created_at",{ascending:false});
+  const list=$("stockList");
+  if(error){list.innerHTML='<tr><td colspan="5" class="empty">Gagal: '+esc(error.message)+'</td></tr>';return;}
+  if(!data?.length){list.innerHTML='<tr><td colspan="5" class="empty">Belum ada stok.</td></tr>';return;}
+  list.innerHTML=data.map(r=>`
+    <tr><td>${esc(r.item)}</td><td>${Number(r.qty)}</td><td>${rupiah(r.cost)}</td>
+    <td>${rupiah(Number(r.qty)*Number(r.cost))}</td>
+    <td><button class="danger" onclick="deleteRow('stock',${Number(r.id)},loadStock)">Hapus</button></td></tr>`).join("");
+}
+
+async function addSale(){
+  const item=prompt("Nama item:");
+  if(!item?.trim()) return;
+  const qty=Number(prompt("Jumlah terjual:","1"));
+  const price=Number(prompt("Harga jual per unit (USD):","0"));
+  if(!Number.isFinite(qty)||!Number.isFinite(price)||qty<=0||price<0){alert("Angka tidak valid.");return;}
+  const {error}=await db.from("sales").insert([{item:item.trim(),qty,price}]);
+  if(error){alert("Gagal menambah sale: "+error.message);return;}
+  await loadSales(); await loadDashboard();
+}
+
+async function loadSales(){
+  const {data,error}=await db.from("sales").select("*").order("created_at",{ascending:false});
+  const list=$("salesList"), recent=$("recentSales");
+  if(error){list.innerHTML='<tr><td colspan="6" class="empty">Gagal: '+esc(error.message)+'</td></tr>';return;}
+  if(!data?.length){
+    list.innerHTML='<tr><td colspan="6" class="empty">Belum ada penjualan.</td></tr>';
+    recent.innerHTML='<tr><td colspan="4" class="empty">Belum ada transaksi</td></tr>';return;
+  }
+  list.innerHTML=data.map(r=>`
+    <tr><td>${esc(r.item)}</td><td>${Number(r.qty)}</td><td>${money(r.price)}</td>
+    <td>${money(Number(r.qty)*Number(r.price))}</td><td>${fmtDate(r.created_at)}</td>
+    <td><button class="danger" onclick="deleteRow('sales',${Number(r.id)},loadSales)">Hapus</button></td></tr>`).join("");
+  recent.innerHTML=data.slice(0,8).map(r=>`
+    <tr><td>${esc(r.item)}</td><td>${Number(r.qty)}</td>
+    <td>${money(Number(r.qty)*Number(r.price))}</td><td>${fmtDate(r.created_at)}</td></tr>`).join("");
+}
+
+async function addExpense(){
+  const description=prompt("Deskripsi pengeluaran:");
+  if(!description?.trim()) return;
+  const amount=Number(prompt("Jumlah (USD):","0"));
+  if(!Number.isFinite(amount)||amount<0){alert("Angka tidak valid.");return;}
+  const {error}=await db.from("expenses").insert([{description:description.trim(),amount}]);
+  if(error){alert("Gagal menambah expense: "+error.message);return;}
+  await loadExpenses(); await loadDashboard();
+}
+
+async function loadExpenses(){
+  const {data,error}=await db.from("expenses").select("*").order("created_at",{ascending:false});
+  const list=$("expensesList");
+  if(error){list.innerHTML='<tr><td colspan="4" class="empty">Gagal: '+esc(error.message)+'</td></tr>';return;}
+  if(!data?.length){list.innerHTML='<tr><td colspan="4" class="empty">Belum ada pengeluaran.</td></tr>';return;}
+  list.innerHTML=data.map(r=>`
+    <tr><td>${esc(r.description)}</td><td>${money(r.amount)}</td><td>${fmtDate(r.created_at)}</td>
+    <td><button class="danger" onclick="deleteRow('expenses',${Number(r.id)},loadExpenses)">Hapus</button></td></tr>`).join("");
+}
+
+async function addBalance(){
+  const marketplace=prompt("Marketplace (contoh: U7BUY, Eldorado, ZeusX):");
+  if(!marketplace?.trim()) return;
+  const balance=Number(prompt("Saldo USD:","0"));
+  if(!Number.isFinite(balance)){alert("Angka tidak valid.");return;}
+  const {error}=await db.from("marketplace_balances").insert([{marketplace:marketplace.trim(),balance}]);
+  if(error){alert("Gagal menambah saldo: "+error.message);return;}
+  await loadMarketplaceBalances();
+}
+
+async function loadMarketplaceBalances(){
+  const {data,error}=await db.from("marketplace_balances")
+    .select("marketplace,balance,created_at")
+    .order("created_at",{ascending:false});
+  const box=$("marketplaceBalances");
+  if(error){box.innerHTML='<div class="notice">Gagal memuat saldo: '+esc(error.message)+'</div>';return;}
+  const latest={};
+  (data||[]).forEach(r=>{
+    const k=String(r.marketplace||"").toLowerCase();
+    if(latest[k]===undefined) latest[k]=r;
+  });
+  const keys=Object.keys(latest);
+  if(!keys.length){box.innerHTML='<p class="empty">Belum ada saldo marketplace.</p>';return;}
+  box.innerHTML=keys.map(k=>`
+    <div class="balance-item">
+      <strong>${esc(latest[k].marketplace)}</strong>
+      <div><span>${money(latest[k].balance)}</span> <span class="muted">${fmtDate(latest[k].created_at)}</span></div>
+    </div>`).join("");
+}
+
+async function deleteRow(table,id,refresh){
+  if(!confirm("Hapus data ini?")) return;
+  const {error}=await db.from(table).delete().eq("id",id);
+  if(error){alert("Gagal menghapus: "+error.message);return;}
+  await refresh();
+  await loadDashboard();
+}
+
+async function loadDashboard(){
+  const [sales,expenses,stock]=await Promise.all([
+    db.from("sales").select("qty,price,created_at,item").order("created_at",{ascending:false}),
+    db.from("expenses").select("amount"),
+    db.from("stock").select("qty,cost")
+  ]);
+
+  let totalSales=0,totalExpenses=0;
+  if(!sales.error){
+    totalSales=(sales.data||[]).reduce((s,r)=>s+Number(r.qty||0)*Number(r.price||0),0);
+    $("totalSales").textContent=money(totalSales);
+    const recent=sales.data||[];
+    $("recentSales").innerHTML=recent.length
+      ? recent.slice(0,8).map(r=>`<tr><td>${esc(r.item)}</td><td>${Number(r.qty)}</td><td>${money(Number(r.qty)*Number(r.price))}</td><td>${fmtDate(r.created_at)}</td></tr>`).join("")
+      : '<tr><td colspan="4" class="empty">Belum ada transaksi</td></tr>';
+  }else $("totalSales").textContent=money(0);
+
+  if(!expenses.error){
+    totalExpenses=(expenses.data||[]).reduce((s,r)=>s+Number(r.amount||0),0);
+    $("totalExpenses").textContent=money(totalExpenses);
+  }else $("totalExpenses").textContent=money(0);
+
+  if(!stock.error){
+    const total=(stock.data||[]).reduce((s,r)=>s+Number(r.qty||0)*Number(r.cost||0),0);
+    $("stockValue").textContent=rupiah(total);
+  }else $("stockValue").textContent=rupiah(0);
+
+  $("totalProfit").textContent=money(totalSales-totalExpenses);
+  await loadMarketplaceBalances();
+}
+
+loadDashboard();
+</script>
 </body>
 </html>
